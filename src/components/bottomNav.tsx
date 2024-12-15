@@ -1,5 +1,6 @@
 import { StyleSheet, View, TouchableOpacity, Alert, SafeAreaView } from 'react-native';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 
 export function BottomNav() {
   const styles = StyleSheet.create({
@@ -17,7 +18,7 @@ export function BottomNav() {
 
   return (
       <View style={styles.bottomNav}>
-        <TouchableOpacity onPress={() => Alert.alert("Going to HOME")}>
+        <TouchableOpacity onPress={() => router.push({pathname: '/', params: {}})}>
           <MaterialIcons name="home" size={30} color="white" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => Alert.alert("Going to Ponto")}>
@@ -26,7 +27,7 @@ export function BottomNav() {
         <TouchableOpacity onPress={() => Alert.alert("Going to relatorio")}>
           <MaterialIcons name="bar-chart" size={30} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => Alert.alert("Going to colaboradores")}>
+        <TouchableOpacity onPress={() => router.push({ pathname: "/colaborador/calorador-form-view", params: {} })}>
           <FontAwesome name="user-circle" size={30} color="white" />
         </TouchableOpacity>
       </View>
