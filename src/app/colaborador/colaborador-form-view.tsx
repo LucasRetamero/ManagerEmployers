@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
-import { MaterialIcons } from '@expo/vector-icons'; // Import FontAwesome
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons'; // Import FontAwesome
 import { BottomNav } from '@/components/bottomNav';
 import Header from '@/components/header';
 
@@ -29,7 +29,12 @@ export default function EmployerForm() {
   const handleUpdate = () => {
     Alert.alert('Update', `Name: ${name}, Email: ${email}, Option: ${selectedOption}`);
   };
-
+   
+  const handleAddFunction = () => {
+    // Your function to handle the "Add" action
+    alert('Add new function');
+  };
+  
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -37,7 +42,7 @@ export default function EmployerForm() {
        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
          <MaterialIcons name="arrow-back" size={30} color="white" />
        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Colaborador Formulário</Text>
+        <Text style={styles.headerTitle}>Colaborador Formulário - Cadastro/Edição</Text>
        </View>
 
       {/* Content */}
@@ -81,8 +86,9 @@ export default function EmployerForm() {
           onChangeText={setEmail}
         />
 
-        <View style={styles.pickerContainer}>
-        <Text style={styles.titleForm}>Função:</Text>
+        <Text style={styles.titleForm}>Funcão:</Text>
+         {/* Picker and + button wrapped in a row */}
+         <View style={styles.pickerRow}>
           <Picker
             selectedValue={selectedOption}
             onValueChange={(itemValue) => setSelectedOption(itemValue)}
@@ -93,6 +99,11 @@ export default function EmployerForm() {
             <Picker.Item label="Option 2" value="option2" />
             <Picker.Item label="Option 3" value="option3" />
           </Picker>
+
+          {/* Add button with + icon */}
+          <TouchableOpacity onPress={handleAddFunction} style={styles.addButton}>
+            <FontAwesome name="plus" size={20} color="white" />
+          </TouchableOpacity>
         </View>
 
         <View style={styles.pickerContainer}>
@@ -186,6 +197,10 @@ const styles = StyleSheet.create({
     borderBottomColor: '#007BFF',
     marginBottom: 20,
   },
+  pickerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   picker: {
     width: '100%',
   },
@@ -201,5 +216,12 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  addButton: {
+    backgroundColor: '#007BFF',
+    padding: 10,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

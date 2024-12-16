@@ -3,6 +3,7 @@ import { View, TextInput, TouchableOpacity, Modal, Text, Button, StyleSheet, Fla
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import Header from '@/components/header';
 import { BottomNav } from '@/components/bottomNav';
+import { router } from 'expo-router';
 
 export default function colaboradorView(){
    
@@ -74,10 +75,13 @@ export default function colaboradorView(){
           <View style={styles.tableRow}>
             <Text style={styles.tableCell}>{item.name}</Text>
             <View style={styles.actions}>
+            <TouchableOpacity onPress={() => alert('Remove ' + item.name)}>
+                <MaterialIcons name="remove-circle-outline" size={24} color="white" />
+              </TouchableOpacity>
               <TouchableOpacity onPress={() => alert('Edit ' + item.name)}>
                 <MaterialIcons name="edit" size={24} color="white" />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => alert('View ' + item.name)}>
+              <TouchableOpacity onPress={() => router.push({pathname: "/colaborador/colaborador-form-visu-view", params: {}})}>
                 <MaterialIcons name="visibility" size={24} color="white" />
               </TouchableOpacity>
             </View>

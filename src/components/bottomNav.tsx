@@ -27,7 +27,7 @@ export function BottomNav() {
         <TouchableOpacity onPress={() => Alert.alert("Going to relatorio")}>
           <MaterialIcons name="bar-chart" size={30} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push({ pathname: "/colaborador/calorador-form-view", params: {} })}>
+        <TouchableOpacity onPress={() => router.push({ pathname: "/colaborador/colaborador-form-view", params: {} })}>
           <FontAwesome name="user-circle" size={30} color="white" />
         </TouchableOpacity>
       </View>
