@@ -62,7 +62,7 @@ export default function index(){
           <Text style={styles.buttonText}>Colaborades</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push({pathname: "/ponto/ponto-view", params: {}})}>
           <FontAwesome name="clock-o" size={30} color="white" />
           <Text style={styles.buttonText}>Ponto</Text>
         </TouchableOpacity>

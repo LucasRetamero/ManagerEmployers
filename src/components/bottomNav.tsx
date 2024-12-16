@@ -21,7 +21,7 @@ export function BottomNav() {
         <TouchableOpacity onPress={() => router.push({pathname: '/', params: {}})}>
           <MaterialIcons name="home" size={30} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => Alert.alert("Going to Ponto")}>
+        <TouchableOpacity onPress={() => router.push({pathname: '/ponto/ponto-form-view', params: {}})}>
           <MaterialIcons name="timer" size={30} color="white" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => Alert.alert("Going to relatorio")}>

@@ -10,8 +10,8 @@ export default function colaboradorView(){
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [tableData, setTableData] = useState([
-    { id: '1', name: 'John Doe', size: 'Large' },
-    { id: '2', name: 'Jane Smith', size: 'Medium' },
+    { id: '1', name: 'John Doe', size: 'Cancela' },
+    { id: '2', name: 'Jane Smith', size: 'Aguia' },
   ]);
 
   const toggleFilterModal = () => {
@@ -47,7 +47,7 @@ export default function colaboradorView(){
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.filterTitle}>Selecione a opção de filtro:</Text>
-            {['Option 1', 'Option 2', 'Option 3'].map((option, index) => (
+            {['Nome', 'Função'].map((option, index) => (
               <TouchableOpacity
                 key={index}
                 style={styles.radioButtonContainer}
@@ -71,9 +71,17 @@ export default function colaboradorView(){
 
       <FlatList
         data={tableData}
+        ListHeaderComponent={() => (
+                <View style={styles.tableHeader}>
+                  <Text style={[styles.tableHeaderCell, styles.nameColumn]}>Nome</Text>
+                  <Text style={[styles.tableHeaderCell, styles.nameColumn]}>Funçao</Text>
+                  <Text style={[styles.tableHeaderCell, styles.dateColumn]}>Ações</Text>
+                </View>
+              )}
         renderItem={({ item }) => (
           <View style={styles.tableRow}>
             <Text style={styles.tableCell}>{item.name}</Text>
+            <Text style={styles.tableCell}>{item.size}</Text>
             <View style={styles.actions}>
             <TouchableOpacity onPress={() => alert('Remove ' + item.name)}>
                 <MaterialIcons name="remove-circle-outline" size={24} color="white" />
@@ -181,6 +189,26 @@ const styles = StyleSheet.create({
   filterTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    padding: 10,
+    backgroundColor: '#0056b3',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  tableHeaderCell: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
+    textAlign: 'center',
+  },
+  nameColumn: {
+    flex: 1,
+  },
+  dateColumn: {
+    flex: 1,
   },
   });
 
