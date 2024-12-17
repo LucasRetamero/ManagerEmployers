@@ -1,9 +1,10 @@
 import { SQLiteDatabase } from 'expo-sqlite';
 export { type SQLiteDatabase } from 'expo-sqlite';
 import { userEntity } from '@/entity/user-entity';
+import { funcaoEntity } from '@/entity/funcao-eneity';
 
 export async function InitDB(database: SQLiteDatabase){
-    const tables = [userEntity];
+    const tables = [userEntity, funcaoEntity];
     try {
         for (const table of tables) {
           await database.execAsync(table.drop); // Drop existing tables

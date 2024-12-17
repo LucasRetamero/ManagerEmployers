@@ -258,7 +258,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#007BFF',
-    padding: 15,
   },
   SearchEmploButton: {
     backgroundColor: '#007BFF',

@@ -5,7 +5,7 @@ import Header from '@/components/header';
 import { BottomNav } from '@/components/bottomNav';
 import { router } from 'expo-router';
 
-export default function colaboradorView(){
+export default function ColaboradorView(){
    
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
@@ -211,5 +211,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   });
-
-

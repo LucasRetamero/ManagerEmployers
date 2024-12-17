@@ -6,6 +6,54 @@ import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { BottomNav } from '@/components/bottomNav';
 import Header from '@/components/header';
 
+export default function index(){
+
+    return (
+      <View style={styles.container}>
+      {/* Header */}
+      <Header/>
+      {/* Buttons in Rows */}
+      <View style={styles.rowContainer}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push("/colaborador/colaborador-view") }>
+          <FontAwesome name="user-circle" size={30} color="white" />
+          <Text style={styles.buttonText}>Colaborades</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button} onPress={() => router.push({pathname: "/ponto/ponto-view", params: {}})}>
+          <FontAwesome name="clock-o" size={30} color="white" />
+          <Text style={styles.buttonText}>Ponto</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button}>
+          <FontAwesome name="file-text" size={30} color="white" />
+          <Text style={styles.buttonText}>Relatório</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.rowContainer}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push({pathname: "/funcao/funcao-view", params: {} })}>
+          <FontAwesome name="briefcase" size={30} color="white" />
+          <Text style={styles.buttonText}>Funções</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button}>
+          <FontAwesome name="bar-chart" size={30} color="white" />
+          <Text style={styles.buttonText}>Gráficos</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button}>
+          <FontAwesome name="database" size={30} color="white" />
+          <Text style={styles.buttonText}>Sistema</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Bottom Navigation Bar */}
+      <BottomNav/>
+    </View>
+    );
+
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -48,51 +96,3 @@ const styles = StyleSheet.create({
     width: '100%',
   },
 });
-
-export default function index(){
-
-    return (
-      <View style={styles.container}>
-      {/* Header */}
-      <Header/>
-      {/* Buttons in Rows */}
-      <View style={styles.rowContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => router.push("/colaborador/colaborador-view") }>
-          <FontAwesome name="user-circle" size={30} color="white" />
-          <Text style={styles.buttonText}>Colaborades</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button} onPress={() => router.push({pathname: "/ponto/ponto-view", params: {}})}>
-          <FontAwesome name="clock-o" size={30} color="white" />
-          <Text style={styles.buttonText}>Ponto</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button}>
-          <FontAwesome name="file-text" size={30} color="white" />
-          <Text style={styles.buttonText}>Relatório</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.rowContainer}>
-        <TouchableOpacity style={styles.button}>
-          <FontAwesome name="briefcase" size={30} color="white" />
-          <Text style={styles.buttonText}>Funções</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button}>
-          <FontAwesome name="bar-chart" size={30} color="white" />
-          <Text style={styles.buttonText}>Gráficos</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button}>
-          <FontAwesome name="database" size={30} color="white" />
-          <Text style={styles.buttonText}>Sistema</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Bottom Navigation Bar */}
-      <BottomNav/>
-    </View>
-    );
-
-}

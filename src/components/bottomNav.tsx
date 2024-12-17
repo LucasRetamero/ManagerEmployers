@@ -24,8 +24,8 @@ export function BottomNav() {
         <TouchableOpacity onPress={() => router.push({pathname: '/ponto/ponto-form-view', params: {}})}>
           <MaterialIcons name="timer" size={30} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => Alert.alert("Going to relatorio")}>
-          <MaterialIcons name="bar-chart" size={30} color="white" />
+        <TouchableOpacity onPress={() => router.push({pathname: "/funcao/[id]", params:{ id: 0}})}>
+          <MaterialIcons name="work" size={30} color="white" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => router.push({ pathname: "/colaborador/colaborador-form-view", params: {} })}>
           <FontAwesome name="user-circle" size={30} color="white" />

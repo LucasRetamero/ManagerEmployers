@@ -44,20 +44,7 @@ export default function EmployerViewForm() {
           value={name}
           onChangeText={setName}
         />
-        <Text style={styles.titleForm}>CPF:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Entre com o CPF do colaborador"
-          value={name}
-          onChangeText={setName}
-        />
-        <Text style={styles.titleForm}>RG:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Entre com o RG do colaborador"
-          value={name}
-          onChangeText={setName}
-        />
+        
         <Text style={styles.titleForm}>Email:</Text>
         <TextInput
           style={styles.input}

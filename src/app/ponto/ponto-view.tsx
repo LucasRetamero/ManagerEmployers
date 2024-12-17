@@ -1,14 +1,32 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Modal, Text, StyleSheet, FlatList } from 'react-native';
+import {
+  View,
+  TextInput,
+  TouchableOpacity,
+  Modal,
+  Text,
+  StyleSheet,
+  FlatList,
+  Alert
+} from 'react-native';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import Header from '@/components/header';
 import { BottomNav } from '@/components/bottomNav';
 import { router } from 'expo-router';
 import PontoTable from '@/components/pontoTable';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function PontoView() {
+  //States to modal and radiobutton
   const [filterModalVisible, setFilterModalVisible] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(null);
+  const options = ['Nome', 'Data & Hora', 'Função'];
+  const [selectedOption, setSelectedOption] = useState(options[0]);
+
+  // States for date and time pickers
+  const [inputDate, setInputDate] = useState(new Date());
+  const [outputDate, setOutputDate] = useState(new Date());
+  const [showInputDatePicker, setShowInputDatePicker] = useState(false);
+  const [showOutputDatePicker, setShowOutputDatePicker] = useState(false);
 
   // Updated table data structure
   const [tableData, setTableData] = useState([
@@ -34,21 +52,107 @@ export default function PontoView() {
     setFilterModalVisible(!filterModalVisible);
   };
 
-  const handleOptionSelect = (option:any) => {
+  const handleOptionSelect = (option: any) => {
     setSelectedOption(option);
     setFilterModalVisible(false);
+  };
+
+  const handleDateChange = (event: any, date: any, type: any) => {
+    if (type === 'input' && date) {
+      setShowInputDatePicker(false);
+      setInputDate(date);
+    } else if (type === 'output' && date) {
+      setShowOutputDatePicker(false);
+      setOutputDate(date);
+    }
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.content}>
         <Header />
-        <View style={styles.inputContainer}>
-          <TextInput style={styles.input} placeholder="Entre com a pesquisa" />
-          <TouchableOpacity onPress={toggleFilterModal} style={styles.filterIcon}>
-            <FontAwesome name="filter" size={25} color="white" />
-          </TouchableOpacity>
-        </View>
+
+        <TouchableOpacity onPress={toggleFilterModal} style={styles.filterIcon}>
+          <FontAwesome name="filter" size={25} color="white" style={styles.icon} />
+          <Text style={styles.filterText}> Filtrar pesquisa</Text>
+        </TouchableOpacity>
+
+        {/* Conditional Rendering */}
+        {(selectedOption === 'Nome' || selectedOption === 'Função') && (
+          <View style={styles.inputContainer}>
+            <TextInput style={styles.input} placeholder="Entre com a pesquisa" />
+          </View>
+        )}
+
+        {selectedOption === 'Data & Hora' && (
+          <View>
+            {/* Input Date-Time Pickers */}
+            <Text style={styles.label}>Entrada:</Text>
+            <View style={styles.dateTimeRow}>
+              <TouchableOpacity
+                style={styles.dateTimeButton}
+                onPress={() => setShowInputDatePicker(true)}
+              >
+                <Text style={styles.dateTimeText}>
+                  {inputDate.toLocaleDateString()}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.dateTimeButton}
+                onPress={() => setShowInputDatePicker(true)}
+              >
+                <Text style={styles.dateTimeText}>
+                  {inputDate.toLocaleTimeString()}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.label}>Saída:</Text>
+            <View style={styles.dateTimeRow}>
+              <TouchableOpacity
+                style={styles.dateTimeButton}
+                onPress={() => setShowOutputDatePicker(true)}
+              >
+                <Text style={styles.dateTimeText}>
+                  {outputDate.toLocaleDateString()}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.dateTimeButton}
+                onPress={() => setShowOutputDatePicker(true)}
+              >
+                <Text style={styles.dateTimeText}>
+                  {outputDate.toLocaleTimeString()}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* DateTime Pickers */}
+            {showInputDatePicker && (
+              <DateTimePicker
+                value={inputDate}
+                mode="date"
+                display="default"
+                onChange={(event, date) => handleDateChange(event, date, 'input')}
+              />
+            )}
+            {showOutputDatePicker && (
+              <DateTimePicker
+                value={outputDate}
+                mode="date"
+                display="default"
+                onChange={(event, date) => handleDateChange(event, date, 'output')}
+              />
+            )}
+
+            <View>
+              {/* Blue Search Button */}
+              <TouchableOpacity style={styles.searchButton} onPress={() => Alert.alert("Search by data and hour")}>
+                <Text style={styles.searchButtonText}>Pesquisar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
 
         <Modal
           visible={filterModalVisible}
@@ -59,7 +163,7 @@ export default function PontoView() {
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <Text style={styles.filterTitle}>Selecione a opção de filtro:</Text>
-              {['Nome', 'Função'].map((option, index) => (
+              {options.map((option, index) => (
                 <TouchableOpacity
                   key={index}
                   style={styles.radioButtonContainer}
@@ -81,7 +185,7 @@ export default function PontoView() {
           </View>
         </Modal>
         {/* Table rendering */}
-        <PontoTable data={tableData}/>
+        <PontoTable data={tableData} />
       </View>
       <BottomNav />
     </View>
@@ -95,7 +199,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 16,
+    padding: 15,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -111,9 +215,21 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   filterIcon: {
-    padding: 10,
-    backgroundColor: '#007bff',
-    color: '#FFF',
+    flexDirection: 'row', // Aligns children (icon and text) in a row
+    alignItems: 'center', // Vertically centers the icon and text
+    backgroundColor: '#007BFF', // Background color for the button
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    marginBottom: 20,
+    borderRadius: 5,
+  },
+  icon: {
+    marginRight: 8, // Adds space between the icon and text
+  },
+  filterText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   modalOverlay: {
     flex: 1,
@@ -155,6 +271,42 @@ const styles = StyleSheet.create({
   },
   filterTitle: {
     fontSize: 18,
+    fontWeight: 'bold',
+  },
+  dateTimeRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  dateTimeButton: {
+    flex: 1,
+    backgroundColor: '#007BFF',
+    padding: 10,
+    marginHorizontal: 5,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  dateTimeText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  searchButton: {
+    backgroundColor: '#007BFF',
+    padding: 12,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 20, // Space from the previous content
+    width: '100%',
+    marginBottom: 15,
+  },
+  searchButtonText: {
+    color: 'white',
+    fontSize: 16,
     fontWeight: 'bold',
   },
 });
