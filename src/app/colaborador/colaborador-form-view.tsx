@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,13 +6,15 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  Button
+  Button,
+  Modal
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons'; // Import FontAwesome
 import { BottomNav } from '@/components/bottomNav';
 import Header from '@/components/header';
+import { useFuncaoDatabase, FuncaoDatabase } from '@/database/useFuncaoDatabase';
 
 export default function EmployerForm() {
   const router = useRouter();
@@ -21,7 +23,15 @@ export default function EmployerForm() {
   const [email, setEmail] = useState('');
   const [description, setDescription] = useState("");
   const [selectedOption, setSelectedOption] = useState('');
-
+  //Case add new item from Funcao table
+  const [nomeFuncao, setNomeFuncao] = useState("");
+  //Setting up Model 
+  const [modalVisible, setModalVisible] = useState(false);
+  //funcao Table
+  const [funcaoTable, setFuncaoTable] = useState<FuncaoDatabase[]>([]);
+ //Manager the database
+  const funcaoDatabase = useFuncaoDatabase();
+   
   const handleAdd = () => {
     Alert.alert('Add', `Name: ${name}, Email: ${email}, Option: ${selectedOption}`);
   };
@@ -30,10 +40,34 @@ export default function EmployerForm() {
     Alert.alert('Update', `Name: ${name}, Email: ${email}, Option: ${selectedOption}`);
   };
    
-  const handleAddFunction = () => {
-    // Your function to handle the "Add" action
-    alert('Add new function');
-  };
+//Add new item on the database
+async function createFuncao() {
+    try {
+      if (!nomeFuncao) {
+        Alert.alert("Preencha o campo antes de continuar !")
+        return;
+      }
+      const response = await funcaoDatabase.create({ nome: nomeFuncao });
+      setNomeFuncao("");
+      funcaoList();
+      setModalVisible(false);
+    } catch (error) {
+      console.log("Error to add new funcao:", error);
+    }
+  }
+
+//Get item from database
+async function funcaoList() {
+  try {
+    const response = await funcaoDatabase.list();
+    setFuncaoTable(response);
+  } catch (error) {
+    console.error("Error to get a funcao list:", error);
+  }
+}
+ useEffect(() => {
+  funcaoList()
+  }, [funcaoTable]);
   
   return (
     <View style={styles.container}>
@@ -81,13 +115,18 @@ export default function EmployerForm() {
             style={styles.picker}
           >
             <Picker.Item label="Selecione a função do colaborador" value="" />
-            <Picker.Item label="Option 1" value="option1" />
-            <Picker.Item label="Option 2" value="option2" />
-            <Picker.Item label="Option 3" value="option3" />
+            {funcaoTable.length < 0 ? (
+            <Picker.Item label="Carregando..." value="" />
+          ) : (
+             funcaoTable.map((option, index) => (
+              <Picker.Item key={index} label={option.nome} value={option.nome} />
+            ))
+          )}
+        
           </Picker>
 
           {/* Add button with + icon */}
-          <TouchableOpacity onPress={handleAddFunction} style={styles.addButton}>
+          <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.addButton}>
             <FontAwesome name="plus" size={20} color="white" />
           </TouchableOpacity>
         </View>
@@ -100,8 +139,8 @@ export default function EmployerForm() {
             style={styles.picker}
           >
             <Picker.Item label="Selecione se o colaborador esta ativo ou não" value="" />
-            <Picker.Item label="Disponivel" value="option1" />
-            <Picker.Item label="Indisponível" value="option2" />
+            <Picker.Item label="Disponivel" value="Disponivel" />
+            <Picker.Item label="Indisponível" value="Indisponível" />
           </Picker>
         </View>
 
@@ -114,6 +153,42 @@ export default function EmployerForm() {
           multiline={true}  
           numberOfLines={10} 
         />
+        
+         {/* Add new Funcao */}
+                <Modal
+                visible={modalVisible}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={ () => setModalVisible(false)}
+              >
+                <View style={styles.modalOverlay}>
+                  <View style={styles.modalContent}>
+                    <Text style={styles.modalTitle}>Adicionar nova função</Text>
+                     {/* Form Inputs */}
+                            <TextInput
+                              style={styles.input}
+                              placeholder="Entre com o nome do função"
+                              value={nomeFuncao}
+                              onChangeText={setNomeFuncao}
+                            />     
+                    <View style={styles.buttonContainer}>
+                      <TouchableOpacity
+                        onPress={ () => setModalVisible(false)}
+                        style={[styles.button, styles.cancelButton]}
+                      >
+                        <Text style={styles.buttonText}>Cancel</Text>
+                      </TouchableOpacity>
+        
+                      <TouchableOpacity
+                        onPress={createFuncao}
+                        style={[styles.button, styles.confirmButton]}
+                      >
+                        <Text style={styles.buttonText}>Gravar</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              </Modal>
 
         {/* Buttons */}
         {id === null ? (
@@ -209,5 +284,34 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     justifyContent: 'center',
     alignItems: 'center',
+  }, 
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    width: 300,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  cancelButton: {
+    backgroundColor: 'blue',
+  },
+  confirmButton: {
+    backgroundColor: 'green',
   },
 });

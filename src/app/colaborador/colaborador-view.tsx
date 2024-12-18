@@ -1,18 +1,37 @@
-import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Modal, Text, Button, StyleSheet, FlatList } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, TextInput, TouchableOpacity, Modal, Text, Alert, StyleSheet, FlatList } from 'react-native';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import Header from '@/components/header';
 import { BottomNav } from '@/components/bottomNav';
 import { router } from 'expo-router';
+import { useColaboradoratabase, ColaboradorDatabase } from '@/database/useColaboradorDatabase';
 
-export default function ColaboradorView(){
-   
+export default function ColaboradorView() {
   const [filterModalVisible, setFilterModalVisible] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [tableData, setTableData] = useState([
-    { id: '1', name: 'John Doe', size: 'Cancela' },
-    { id: '2', name: 'Jane Smith', size: 'Aguia' },
-  ]);
+  const [search, setSearch] = useState("");
+
+  //setting up radio button
+  const options = ['Nome', 'Função'];
+  const [selectedOption, setSelectedOption] = useState(options[0]);
+
+  //Colaborador Table
+  const [colaboradorTable, setColaboradorTable] = useState<ColaboradorDatabase[]>([]);
+  
+  //Manager the database
+  const colaboradorDatabase = useColaboradoratabase();
+
+  //Get List from database
+  async function list() {
+    try {
+      const response = selectedOption === "Nome"
+       ? await colaboradorDatabase.searchByNome(search) 
+       :
+        await colaboradorDatabase.searchByFuncao(search);
+      setColaboradorTable(response);
+    } catch (error) {
+      console.error("Error to get a colaborador:", error);
+    }
+  }
 
   const toggleFilterModal = () => {
     setFilterModalVisible(!filterModalVisible);
@@ -22,84 +41,81 @@ export default function ColaboradorView(){
     setSelectedOption(option);
     setFilterModalVisible(false);
   };
-  
-  
+
+  useEffect(() => {
+    list()
+  }, [search]);
+
   return (
     <View style={styles.container}>
-    <View style={styles.content}>
-    <Header />
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Entre com a pesquisa"
-        />
-        <TouchableOpacity onPress={toggleFilterModal} style={styles.filterIcon}>
-          <FontAwesome name="filter" size={25} color="white" />
-        </TouchableOpacity>
-      </View>
-
-      <Modal
-        visible={filterModalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={toggleFilterModal}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.filterTitle}>Selecione a opção de filtro:</Text>
-            {['Nome', 'Função'].map((option, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.radioButtonContainer}
-                onPress={() => handleOptionSelect(option)}
-              >
-                <View
-                  style={[
-                    styles.radioButton,
-                    selectedOption === option && styles.selectedRadioButton,
-                  ]}
-                />
-                <Text style={styles.optionText}>{option}</Text>
-              </TouchableOpacity>
-            ))}
-            <TouchableOpacity onPress={toggleFilterModal}>
-              <Text style={styles.closeButton}>Close</Text>
-            </TouchableOpacity>
-          </View>
+      <View style={styles.content}>
+        <Header />
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Entre com a pesquisa"
+            onChangeText={setSearch}
+          />
+          <TouchableOpacity onPress={toggleFilterModal} style={styles.filterIcon}>
+            <FontAwesome name="filter" size={25} color="white" />
+          </TouchableOpacity>
         </View>
-      </Modal>
 
-      <FlatList
-        data={tableData}
-        ListHeaderComponent={() => (
-                <View style={styles.tableHeader}>
-                  <Text style={[styles.tableHeaderCell, styles.nameColumn]}>Nome</Text>
-                  <Text style={[styles.tableHeaderCell, styles.nameColumn]}>Funçao</Text>
-                  <Text style={[styles.tableHeaderCell, styles.dateColumn]}>Ações</Text>
-                </View>
-              )}
-        renderItem={({ item }) => (
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>{item.name}</Text>
-            <Text style={styles.tableCell}>{item.size}</Text>
-            <View style={styles.actions}>
-            <TouchableOpacity onPress={() => alert('Remove ' + item.name)}>
-                <MaterialIcons name="remove-circle-outline" size={24} color="white" />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => alert('Edit ' + item.name)}>
-                <MaterialIcons name="edit" size={24} color="white" />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => router.push({pathname: "/colaborador/colaborador-form-visu-view", params: {}})}>
-                <MaterialIcons name="visibility" size={24} color="white" />
+        <Modal
+          visible={filterModalVisible}
+          animationType="slide"
+          transparent={true}
+          onRequestClose={toggleFilterModal}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.filterTitle}>Selecione a opção de filtro:</Text>
+              {options.map((option, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.radioButtonContainer}
+                  onPress={() => handleOptionSelect(option)}
+                >
+                  <View
+                    style={[
+                      styles.radioButton,
+                      selectedOption === option && styles.selectedRadioButton,
+                    ]}
+                  />
+                  <Text style={styles.optionText}>{option}</Text>
+                </TouchableOpacity>
+              ))}
+              <TouchableOpacity onPress={toggleFilterModal}>
+                <Text style={styles.closeButton}>Close</Text>
               </TouchableOpacity>
             </View>
           </View>
-        )}
-        keyExtractor={(item) => item.id}
-      />
+        </Modal>
+
+        <FlatList
+          data={colaboradorTable}
+          renderItem={({ item }) => (
+            <View style={styles.tableRow}>
+              <Text style={styles.tableCell}>{item.nome}</Text>
+              <Text style={styles.tableCell}>{item.funcao}</Text>
+              <View style={styles.actions}>
+                <TouchableOpacity onPress={() => Alert.alert("Delete")}>
+                  <MaterialIcons name="remove-circle-outline" size={24} color="red" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => router.push({ pathname: "/funcao/[id]", params: { id: item.id } })}>
+                  <MaterialIcons name="edit" size={24} color="blue" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => router.push({ pathname: "/colaborador/colaborador-form-visu-view", params: {} })}>
+                  <MaterialIcons name="visibility" size={24} color="black" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+          keyExtractor={(item) => String(item.id)}
+        />
+      </View>
+      <BottomNav />
     </View>
-    <BottomNav />
-  </View>
   );
 };
 
@@ -123,7 +139,7 @@ const styles = StyleSheet.create({
     borderColor: '#007bff', // Blue border color
     padding: 15,
     marginRight: 10,
-    borderRadius: 5,   
+    borderRadius: 5,
   },
   filterIcon: {
     padding: 10,
@@ -145,21 +161,25 @@ const styles = StyleSheet.create({
   },
   tableRow: {
     flexDirection: 'row',
-    padding: 10,
-    backgroundColor: '#007bff', // Blue background
-    borderBottomWidth: 5,
-    borderColor: '#ccc',
-    alignItems: 'center',
+    backgroundColor: 'white', // White background for rows
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd', // Light gray border
+    alignItems: 'center', // Align content vertically
   },
   tableCell: {
-    flex: 1,
-    fontSize: 20,
+    flex: 2, // Adjust column width
+    fontSize: 18,
+    color: '#007BFF', // Blue text color
+    textAlign: 'center',
     fontWeight: 'bold',
-    color: 'white', // White text
   },
   actions: {
+    flex: 2,
     flexDirection: 'row',
-    gap: 10,
+    justifyContent: 'space-around',
+    alignItems: 'center',
   },
   radioButtonContainer: {
     flexDirection: 'row',
@@ -210,4 +230,4 @@ const styles = StyleSheet.create({
   dateColumn: {
     flex: 1,
   },
-  });
+});

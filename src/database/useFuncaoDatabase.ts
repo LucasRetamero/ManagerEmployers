@@ -42,6 +42,18 @@ export function useFuncaoDatabase(){
   } 
  }
 
+ async function list(){
+  try {
+    const query = "SELECT * FROM funcao";
+
+    const response = await database.getAllAsync<FuncaoDatabase>(query);
+
+    return response ;
+  } catch (error) {
+    throw error;
+  } 
+ }
+
  async function update(data: FuncaoDatabase) {
     const statement = await database.prepareAsync(
       "UPDATE funcao SET nome = $nome WHERE id = $id"
@@ -81,5 +93,5 @@ export function useFuncaoDatabase(){
     }
   }
 
- return { create, searchByNome, remove, show, update };
+ return { create, searchByNome, remove, show, update, list };
 }
