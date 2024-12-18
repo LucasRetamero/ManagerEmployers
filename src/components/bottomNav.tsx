@@ -27,7 +27,7 @@ export function BottomNav() {
         <TouchableOpacity onPress={() => router.push({pathname: "/funcao/[id]", params:{ id: 0}})}>
           <MaterialIcons name="work" size={30} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push({ pathname: "/colaborador/colaborador-form-view", params: {} })}>
+        <TouchableOpacity onPress={() => router.push({pathname: "/colaborador/edition/[id]", params: { id: 0} })}>
           <FontAwesome name="user-circle" size={30} color="white" />
         </TouchableOpacity>
       </View>

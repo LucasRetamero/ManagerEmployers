@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -9,81 +9,123 @@ import {
   Button
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons'; // Import FontAwesome
 import { BottomNav } from '@/components/bottomNav';
 import Header from '@/components/header';
+import { FuncaoDatabase, useFuncaoDatabase } from '@/database/useFuncaoDatabase';
+import { useColaboradoratabase } from '@/database/useColaboradorDatabase';
 
 export default function EmployerViewForm() {
   const router = useRouter();
-  const [id, setId] = useState(null);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [description, setDescription] = useState("");
-  const [selectedOption, setSelectedOption] = useState('');
+  //Get Pameteter
+  const params = useLocalSearchParams<{ id: string }>()
+  //Setting up input from form
+  const [data, setData] = useState({
+    nome: "",
+    email: "",
+    telefone: "",
+    funcao: "",
+    status: "",
+    observacao: "",
+  })
+  //funcao Table
+  const [funcaoTable, setFuncaoTable] = useState<FuncaoDatabase[]>([]);
+  //Manager the database
+  const funcaoDatabase = useFuncaoDatabase();
+  const colaboradorDatabase = useColaboradoratabase();
+
+  //Get item from database
+  async function funcaoList() {
+    try {
+      const response = await funcaoDatabase.list();
+      setFuncaoTable(response);
+    } catch (error) {
+      console.error("Error to get a funcao list:", error);
+    }
+  }
+
+  useEffect(() => {
+    if (Number(params.id) != 0) {
+      colaboradorDatabase.show(Number(params.id)).then((response) => {
+        if (response) {
+          setData({
+            nome: response.nome,
+            email: response.email,
+            telefone: response.telefone,
+            funcao: response.funcao,
+            status: response.status,
+            observacao: response.observacao
+          })
+        }
+      })
+    }
+    funcaoList()
+  }, [params.id, funcaoTable]);
 
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-       <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-         <MaterialIcons name="arrow-back" size={30} color="white" />
-       </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <MaterialIcons name="arrow-back" size={30} color="white" />
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>Colaborador Formulário - Visualizar informações</Text>
-       </View>
+      </View>
 
       {/* Content */}
       <View style={styles.content}>
-       <Text style={styles.title}>CRM Manager</Text>
+        <Text style={styles.title}>CRM Manager</Text>
 
         {/* Form Inputs */}
         <Text style={styles.titleForm}>Nome:</Text>
         <TextInput
           style={styles.input}
           placeholder="Entre com o Nome do colaborador"
-          value={name}
-          onChangeText={setName}
+          value={data.nome}
         />
-        
+
         <Text style={styles.titleForm}>Email:</Text>
         <TextInput
           style={styles.input}
           placeholder="Entre com o Email do colaborador"
-          value={email}
-          onChangeText={setEmail}
+          value={data.email}
         />
         <Text style={styles.titleForm}>Telefone:</Text>
         <TextInput
           style={styles.input}
           placeholder="Entre com o Telefone do colaborador"
-          value={email}
-          onChangeText={setEmail}
+          value={data.telefone}
         />
 
-        <View style={styles.pickerContainer}>
-        <Text style={styles.titleForm}>Função:</Text>
+        <Text style={styles.titleForm}>Funcão:</Text>
+        {/* Picker and + button wrapped in a row */}
+        <View style={styles.pickerRow}>
           <Picker
-            selectedValue={selectedOption}
-            onValueChange={(itemValue) => setSelectedOption(itemValue)}
+            selectedValue={data.funcao}
             style={styles.picker}
           >
             <Picker.Item label="Selecione a função do colaborador" value="" />
-            <Picker.Item label="Option 1" value="option1" />
-            <Picker.Item label="Option 2" value="option2" />
-            <Picker.Item label="Option 3" value="option3" />
+            {funcaoTable.length < 0 ? (
+              <Picker.Item label="Carregando..." value="" />
+            ) : (
+              funcaoTable.map((option, index) => (
+                <Picker.Item key={index} label={option.nome} value={option.nome} />
+              ))
+            )}
+
           </Picker>
         </View>
 
         <View style={styles.pickerContainer}>
-        <Text style={styles.titleForm}>Disponibilidade:</Text>
+          <Text style={styles.titleForm}>Disponibilidade:</Text>
           <Picker
-            selectedValue={selectedOption}
-            onValueChange={(itemValue) => setSelectedOption(itemValue)}
+            selectedValue={data.status}
             style={styles.picker}
           >
             <Picker.Item label="Selecione se o colaborador esta ativo ou não" value="" />
-            <Picker.Item label="Disponivel" value="option1" />
-            <Picker.Item label="Indisponível" value="option2" />
+            <Picker.Item label="Ativo" value="Ativo" />
+            <Picker.Item label="Desativado" value="Desativado" />
           </Picker>
         </View>
 
@@ -91,18 +133,17 @@ export default function EmployerViewForm() {
         <TextInput
           style={styles.input}
           placeholder="Escreva as observações referente ao colaborador"
-          value={description}
-          onChangeText={setDescription}
-          multiline={true}  
-          numberOfLines={10} 
+          value={data.observacao}
+          multiline={true}
+          numberOfLines={10}
         />
 
         {/* Buttons */}
-          <TouchableOpacity style={styles.button} onPress={() => router.push({pathname: "/colaborador/colaborador-view", params: {}})}>
-            <Text style={styles.buttonText}>Voltar</Text>
-          </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => router.push({ pathname: "/colaborador/colaborador-view", params: {} })}>
+          <Text style={styles.buttonText}>Voltar</Text>
+        </TouchableOpacity>
       </View>
-     <BottomNav/>
+      <BottomNav />
     </View>
   );
 }
@@ -158,6 +199,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#007BFF',
     marginBottom: 20,
+  },
+  pickerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   picker: {
     width: '100%',

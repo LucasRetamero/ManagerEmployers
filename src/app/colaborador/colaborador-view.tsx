@@ -7,8 +7,16 @@ import { router } from 'expo-router';
 import { useColaboradoratabase, ColaboradorDatabase } from '@/database/useColaboradorDatabase';
 
 export default function ColaboradorView() {
+  
+  //Modal to show or hide
+  const [removeModalVisible, setRemoveModalVisible] = useState(false);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
+  
+  //Setting up input search
   const [search, setSearch] = useState("");
+
+  // ID from table
+  const [id, setId] = useState(0);
 
   //setting up radio button
   const options = ['Nome', 'Função'];
@@ -32,7 +40,24 @@ export default function ColaboradorView() {
       console.error("Error to get a colaborador:", error);
     }
   }
+  //Remove data by id from database
+  async function remove() {
+    try {
+      await colaboradorDatabase.remove(id);
+      await list();
+      setId(0);
+      setRemoveModalVisible(false);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  
+  function confirmDeletion(id: number){
+    setRemoveModalVisible(true);
+    setId(id);
+ }
 
+  //setting up Filter
   const toggleFilterModal = () => {
     setFilterModalVisible(!filterModalVisible);
   };
@@ -99,13 +124,13 @@ export default function ColaboradorView() {
               <Text style={styles.tableCell}>{item.nome}</Text>
               <Text style={styles.tableCell}>{item.funcao}</Text>
               <View style={styles.actions}>
-                <TouchableOpacity onPress={() => Alert.alert("Delete")}>
+                <TouchableOpacity onPress={() => confirmDeletion(item.id)}>
                   <MaterialIcons name="remove-circle-outline" size={24} color="red" />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => router.push({ pathname: "/funcao/[id]", params: { id: item.id } })}>
+                <TouchableOpacity onPress={() => router.push({ pathname: "/colaborador/edition/[id]", params: { id: item.id } })}>
                   <MaterialIcons name="edit" size={24} color="blue" />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => router.push({ pathname: "/colaborador/colaborador-form-visu-view", params: {} })}>
+                <TouchableOpacity onPress={() => router.push({ pathname: "/colaborador/visualization/[id]", params: { id: item.id} })}>
                   <MaterialIcons name="visibility" size={24} color="black" />
                 </TouchableOpacity>
               </View>
@@ -114,6 +139,38 @@ export default function ColaboradorView() {
           keyExtractor={(item) => String(item.id)}
         />
       </View>
+
+      {/* Custom Confirmation Modal */}
+              <Modal
+              visible={removeModalVisible}
+              transparent={true}
+              animationType="fade"
+              onRequestClose={ () => setRemoveModalVisible(false)}
+            >
+              <View style={styles.modalOverlay}>
+                <View style={styles.modalContent}>
+                  <Text style={styles.modalTitle}>Confirmação</Text>
+                  <Text style={styles.modalMessage}>Deseja realmente remover esse colaborador ? </Text>
+      
+                  <View style={styles.buttonContainer}>
+                    <TouchableOpacity
+                      onPress={ () => setRemoveModalVisible(false)}
+                      style={[styles.button, styles.cancelButton]}
+                    >
+                      <Text style={styles.buttonText}>Cancel</Text>
+                    </TouchableOpacity>
+      
+                    <TouchableOpacity
+                      onPress={remove}
+                      style={[styles.button, styles.confirmButton]}
+                    >
+                      <Text style={styles.buttonText}>Remover</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </Modal>
+
       <BottomNav />
     </View>
   );
@@ -229,5 +286,35 @@ const styles = StyleSheet.create({
   },
   dateColumn: {
     flex: 1,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalMessage: {
+    fontSize: 16,
+    marginBottom: 20,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  button: {
+    padding: 10,
+    borderRadius: 5,
+    width: '45%',
+    alignItems: 'center',
+  },
+  cancelButton: {
+    backgroundColor: 'blue',
+  },
+  confirmButton: {
+    backgroundColor: 'red',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
   },
 });
