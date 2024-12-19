@@ -24,7 +24,7 @@ export default function index(){
           <Text style={styles.buttonText}>Ponto</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => Alert.alert("Feature Comming Soon !")}>
           <FontAwesome name="file-text" size={30} color="white" />
           <Text style={styles.buttonText}>Relatório</Text>
         </TouchableOpacity>
@@ -36,12 +36,12 @@ export default function index(){
           <Text style={styles.buttonText}>Funções</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => Alert.alert("Feature Comming Soon !")}>
           <FontAwesome name="bar-chart" size={30} color="white" />
           <Text style={styles.buttonText}>Gráficos</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => Alert.alert("Feature Comming Soon !")}>
           <FontAwesome name="database" size={30} color="white" />
           <Text style={styles.buttonText}>Sistema</Text>
         </TouchableOpacity>

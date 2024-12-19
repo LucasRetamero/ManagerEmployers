@@ -1,18 +1,16 @@
-export const colaboradorEntity = {
+export const pontoEntity = {
     create: `
-      CREATE TABLE IF NOT EXISTS colaborador (
+      CREATE TABLE IF NOT EXISTS ponto (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT,
-        email TEXT,
-        telefone TEXT,
         funcao TEXT,
-        status TEXT,
-        observacao TEXT
-      );`,
-    drop: `DROP TABLE IF EXISTS colaborador;`,
+        data_entrada TEXT,
+        data_saida TEXT
+        );`,
+    drop: `DROP TABLE IF EXISTS ponto;`,
     seed: [
-      `INSERT INTO colaborador (nome, email, telefone, funcao, status, observacao) VALUES ('Torres alberto', 'torresalberto@gmail.com', '(19) 3854-2381', 'Lider', 'Ativo', 'faltar entregar documentos');`,
-      `INSERT INTO colaborador (nome, email, telefone, funcao, status, observacao) VALUES ('Maria Torres', 'mariatorres@gmail.com', '(19) 93854-2381', 'Aguia', 'Desativado', 'faltar entregar documentos');`,
-      `INSERT INTO colaborador (nome, email, telefone, funcao, status, observacao) VALUES ('Juliano Alves', 'julianoalves@gmail.com', '(19) 3854-2381', 'Porteiro', 'Ativo', 'documentos entregue');`,  
+      `INSERT INTO ponto (nome, funcao, data_entrada, data_saida) VALUES ('Torres alberto', 'Lider', '18/12/2024 18:00', '18/12/2024 20:00');`,
+      `INSERT INTO ponto (nome, funcao, data_entrada, data_saida) VALUES ('Maria Torres', 'Aguia', '18/12/2024 13:00', '18/12/2024 20:00');`,
+      `INSERT INTO ponto (nome, funcao, data_entrada, data_saida) VALUES ('Maria Torres', 'Aguia', '18/12/2024 10:00', '18/12/2024 23:00');`,
     ],
   };
