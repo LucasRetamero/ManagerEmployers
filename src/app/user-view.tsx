@@ -16,7 +16,7 @@ const Style = StyleSheet.create({
   });
 
 export default function userView(){
-    
+    // npx expo probuild to generate android folder
     const [id, setId] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");

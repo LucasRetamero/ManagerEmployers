@@ -7,7 +7,8 @@ import {
   StyleSheet,
   Alert,
   Button,
-  Modal
+  Modal,
+  ScrollView
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -16,6 +17,7 @@ import { BottomNav } from '@/components/bottomNav';
 import Header from '@/components/header';
 import { useFuncaoDatabase, FuncaoDatabase } from '@/database/useFuncaoDatabase';
 import { useColaboradoratabase } from '@/database/useColaboradorDatabase';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 export default function EmployerForm() {
   const router = useRouter();
@@ -206,10 +208,10 @@ export default function EmployerForm() {
         <Text style={styles.headerTitle}>Colaborador Formulário - Cadastro/Edição</Text>
       </View>
 
+      <ScrollView>
       {/* Content */}
       <View style={styles.content}>
         <Text style={styles.title}>CRM Manager</Text>
-
         {/* Form Inputs */}
         <Text style={styles.titleForm}>Nome:</Text>
         <TextInput
@@ -280,7 +282,7 @@ export default function EmployerForm() {
           multiline={true}
           numberOfLines={10}
         />
-
+ 
         {/* Add new Funcao */}
         <Modal
           visible={modalVisible}
@@ -327,8 +329,11 @@ export default function EmployerForm() {
             <Text style={styles.buttonText}>Atualizar</Text>
           </TouchableOpacity>
         )}
+     
       </View>
+      </ScrollView>
       <BottomNav />
+     
     </View>
   );
 }
@@ -394,7 +399,7 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: '#007BFF',
-    padding: 15,
+    padding: 20,
     borderRadius: 50,
     width: 120,
     alignItems: 'center',

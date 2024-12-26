@@ -1,56 +1,54 @@
 import React, { useEffect, useState } from 'react';
 import { Input } from '@/components/input';
-import { StyleSheet,View, Button, Alert, FlatList, Text, TouchableOpacity  } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Button,
+  Alert,
+  FlatList,
+  Text,
+  TouchableOpacity,
+  Dimensions
+} from 'react-native';
 import { router } from "expo-router";
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { BottomNav } from '@/components/bottomNav';
 import Header from '@/components/header';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
-export default function index(){
+export default function index() {
 
-    return (
-      <View style={styles.container}>
+  //Get Screen size
+  const windowW = Dimensions.get('window').width
+  const windowH = Dimensions.get('window').height
+
+  return (
+    <View style={styles.container}>
       {/* Header */}
-      <Header/>
+      <Header />
       {/* Buttons in Rows */}
-      <View style={styles.rowContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => router.push("/colaborador/colaborador-view") }>
-          <FontAwesome name="user-circle" size={30} color="white" />
-          <Text style={styles.buttonText}>Colaborades</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button} onPress={() => router.push({pathname: "/ponto/ponto-view", params: {}})}>
-          <FontAwesome name="clock-o" size={30} color="white" />
-          <Text style={styles.buttonText}>Ponto</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button} onPress={() => Alert.alert("Feature Comming Soon !")}>
-          <FontAwesome name="file-text" size={30} color="white" />
-          <Text style={styles.buttonText}>Relatório</Text>
-        </TouchableOpacity>
+      <View style={styles.button}>
+      <FontAwesome.Button name="user-circle" size={30}  backgroundColor="#007BFF" onPress={() => router.push("/colaborador/colaborador-view")}>
+       Colaboradores
+      </FontAwesome.Button>
       </View>
-
-      <View style={styles.rowContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => router.push({pathname: "/funcao/funcao-view", params: {} })}>
-          <FontAwesome name="briefcase" size={30} color="white" />
-          <Text style={styles.buttonText}>Funções</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button} onPress={() => Alert.alert("Feature Comming Soon !")}>
-          <FontAwesome name="bar-chart" size={30} color="white" />
-          <Text style={styles.buttonText}>Gráficos</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button} onPress={() => Alert.alert("Feature Comming Soon !")}>
-          <FontAwesome name="database" size={30} color="white" />
-          <Text style={styles.buttonText}>Sistema</Text>
-        </TouchableOpacity>
+      
+      <View style={styles.button}>
+      <FontAwesome.Button name="clock-o" size={30}  backgroundColor="#007BFF" onPress={() => router.push({ pathname: "/ponto/ponto-view" })}>
+       Ponto
+      </FontAwesome.Button>
+      </View>
+      
+      <View style={styles.button}>
+      <FontAwesome.Button name="briefcase" size={30} backgroundColor="#007BFF" onPress={() => router.push({ pathname: "/funcao/funcao-view"})}>
+       Funções
+      </FontAwesome.Button>
       </View>
 
       {/* Bottom Navigation Bar */}
-      <BottomNav/>
+      <BottomNav />
     </View>
-    );
+  );
 
 }
 
@@ -59,40 +57,19 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    margin: 40,
-    textAlign: 'left',
-  },
   rowContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 16,
+    justifyContent: 'center',
+    marginLeft: wp('4%'),
+    marginBottom: hp('1%'),
   },
   button: {
-    backgroundColor: '#007BFF',
-    margin: 30,
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 140,
-    height: 140,
+   marginBottom: hp('2%'),
   },
+
   buttonText: {
     color: 'white',
-    fontSize: 25,
+    fontSize: hp('3%'),
     textAlign: 'center',
-    marginTop: 8,
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#007BFF',
-    paddingVertical: 20,
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
+    marginTop: hp('1%'),
   },
 });
