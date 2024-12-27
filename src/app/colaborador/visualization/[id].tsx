@@ -15,6 +15,8 @@ import { BottomNav } from '@/components/bottomNav';
 import Header from '@/components/header';
 import { FuncaoDatabase, useFuncaoDatabase } from '@/database/useFuncaoDatabase';
 import { useColaboradoratabase } from '@/database/useColaboradorDatabase';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 
 export default function EmployerViewForm() {
   const router = useRouter();
@@ -75,8 +77,6 @@ export default function EmployerViewForm() {
 
       {/* Content */}
       <View style={styles.content}>
-        <Text style={styles.title}>CRM Manager</Text>
-
         {/* Form Inputs */}
         <Text style={styles.titleForm}>Nome:</Text>
         <TextInput
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     marginRight: 10, // Add space between the icon and title
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: hp('2%'),
     color: '#fff',
     fontWeight: 'bold',
   },

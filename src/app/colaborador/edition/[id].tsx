@@ -17,7 +17,7 @@ import { BottomNav } from '@/components/bottomNav';
 import Header from '@/components/header';
 import { useFuncaoDatabase, FuncaoDatabase } from '@/database/useFuncaoDatabase';
 import { useColaboradoratabase } from '@/database/useColaboradorDatabase';
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 export default function EmployerForm() {
   const router = useRouter();
@@ -192,6 +192,18 @@ export default function EmployerForm() {
       })
     }
   }
+ 
+  //Ask to clear fields
+  function clearFields(){
+    Alert.alert('Limpar Campos', 'Deseja limpar os campos ?', [
+      {
+        text: 'Cancelar',
+        style: 'cancel',
+      },
+      {text: 'Limpar', onPress: () => setData(initialData)},
+    ]);
+  }
+
 
   useEffect(() => {
     funcaoList()
@@ -209,131 +221,138 @@ export default function EmployerForm() {
       </View>
 
       <ScrollView>
-      {/* Content */}
-      <View style={styles.content}>
-        <Text style={styles.title}>CRM Manager</Text>
-        {/* Form Inputs */}
-        <Text style={styles.titleForm}>Nome:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Entre com o Nome do colaborador"
-          value={data.nome}
-          onChangeText={handleNomeChange}
-        />
-        <Text style={styles.titleForm}>Email:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Entre com o Email do colaborador"
-          value={data.email}
-          onChangeText={handleEmailChange}
-        />
-        <Text style={styles.titleForm}>Telefone:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Entre com o Telefone do colaborador"
-          value={data.telefone}
-          onChangeText={handleTelefoneChange}
-        />
+        {/* Content */}
+        <View style={styles.content}>
+          {/* Form Inputs */}
+          <Text style={styles.titleForm}>Nome:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Entre com o Nome do colaborador"
+            value={data.nome}
+            onChangeText={handleNomeChange}
+          />
+          <Text style={styles.titleForm}>Email:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Entre com o Email do colaborador"
+            value={data.email}
+            onChangeText={handleEmailChange}
+          />
+          <Text style={styles.titleForm}>Telefone:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Entre com o Telefone do colaborador"
+            value={data.telefone}
+            onChangeText={handleTelefoneChange}
+          />
 
-        <Text style={styles.titleForm}>Funcão:</Text>
-        {/* Picker and + button wrapped in a row */}
-        <View style={styles.pickerRow}>
-          <Picker
-            selectedValue={data.funcao}
-            onValueChange={(itemValue) => handleFuncaoChange(itemValue)}
-            style={styles.picker}
+          <Text style={styles.titleForm}>Funcão:</Text>
+          {/* Picker and + button wrapped in a row */}
+          <View style={styles.pickerRow}>
+            <Picker
+              selectedValue={data.funcao}
+              onValueChange={(itemValue) => handleFuncaoChange(itemValue)}
+              style={styles.picker}
+            >
+              <Picker.Item label="Selecione a função do colaborador" value="" />
+              {funcaoTable.length < 0 ? (
+                <Picker.Item label="Carregando..." value="" />
+              ) : (
+                funcaoTable.map((option, index) => (
+                  <Picker.Item key={index} label={option.nome} value={option.nome} />
+                ))
+              )}
+
+            </Picker>
+
+            {/* Add button with + icon */}
+            <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.addButton}>
+              <FontAwesome name="plus" size={20} color="white" />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.pickerContainer}>
+            <Text style={styles.titleForm}>Disponibilidade:</Text>
+            <Picker
+              selectedValue={data.status}
+              onValueChange={(itemValue) => handleStatusChange(itemValue)}
+              style={styles.picker}
+            >
+              <Picker.Item label="Selecione se o colaborador esta ativo ou não" value="" />
+              <Picker.Item label="Ativo" value="Ativo" />
+              <Picker.Item label="Desativado" value="Desativado" />
+            </Picker>
+          </View>
+
+          <Text style={styles.titleForm}>Observações:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Escreva as observações referente ao colaborador"
+            value={data.observacao}
+            onChangeText={handleObservacaoChange}
+            multiline={true}
+            numberOfLines={10}
+          />
+
+          {/* Add new Funcao */}
+          <Modal
+            visible={modalVisible}
+            transparent={true}
+            animationType="fade"
+            onRequestClose={() => setModalVisible(false)}
           >
-            <Picker.Item label="Selecione a função do colaborador" value="" />
-            {funcaoTable.length < 0 ? (
-              <Picker.Item label="Carregando..." value="" />
-            ) : (
-              funcaoTable.map((option, index) => (
-                <Picker.Item key={index} label={option.nome} value={option.nome} />
-              ))
-            )}
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Adicionar nova função</Text>
+                {/* Form Inputs */}
+                <TextInput
+                  style={styles.input}
+                  placeholder="Entre com o nome do função"
+                  value={nomeFuncao}
+                  onChangeText={setNomeFuncao}
+                />
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity
+                    onPress={() => setModalVisible(false)}
+                    style={[styles.button, styles.cancelButton]}
+                  >
+                    <Text style={styles.buttonText}>Cancel</Text>
+                  </TouchableOpacity>
 
-          </Picker>
-
-          {/* Add button with + icon */}
-          <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.addButton}>
-            <FontAwesome name="plus" size={20} color="white" />
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.pickerContainer}>
-          <Text style={styles.titleForm}>Disponibilidade:</Text>
-          <Picker
-            selectedValue={data.status}
-            onValueChange={(itemValue) => handleStatusChange(itemValue)}
-            style={styles.picker}
-          >
-            <Picker.Item label="Selecione se o colaborador esta ativo ou não" value="" />
-            <Picker.Item label="Ativo" value="Ativo" />
-            <Picker.Item label="Desativado" value="Desativado" />
-          </Picker>
-        </View>
-
-        <Text style={styles.titleForm}>Observações:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Escreva as observações referente ao colaborador"
-          value={data.observacao}
-          onChangeText={handleObservacaoChange}
-          multiline={true}
-          numberOfLines={10}
-        />
- 
-        {/* Add new Funcao */}
-        <Modal
-          visible={modalVisible}
-          transparent={true}
-          animationType="fade"
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Adicionar nova função</Text>
-              {/* Form Inputs */}
-              <TextInput
-                style={styles.input}
-                placeholder="Entre com o nome do função"
-                value={nomeFuncao}
-                onChangeText={setNomeFuncao}
-              />
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                  onPress={() => setModalVisible(false)}
-                  style={[styles.button, styles.cancelButton]}
-                >
-                  <Text style={styles.buttonText}>Cancel</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={createFuncao}
-                  style={[styles.button, styles.confirmButton]}
-                >
-                  <Text style={styles.buttonText}>Gravar</Text>
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={createFuncao}
+                    style={[styles.button, styles.confirmButton]}
+                  >
+                    <Text style={styles.buttonText}>Gravar</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-          </View>
-        </Modal>
+          </Modal>
+        </View>
+      </ScrollView>
 
-        {/* Buttons */}
+      {/* Bottom navegation */}
+      <View style={styles.bottomNav}>
+        <TouchableOpacity onPress={() => router.push({ pathname: '/', params: {} })}>
+          <MaterialIcons name="home" size={30} color="white" />
+        </TouchableOpacity>
+
         {Number(params.id) === 0 ? (
-          <TouchableOpacity style={styles.button} onPress={create}>
-            <Text style={styles.buttonText}>Adicionar</Text>
+          <TouchableOpacity onPress={create}>
+            <MaterialIcons name="add" size={30} color="white" />
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity style={styles.button} onPress={update}>
-            <Text style={styles.buttonText}>Atualizar</Text>
+          <TouchableOpacity onPress={update}>
+            <MaterialIcons name="edit" size={30} color="white" />
           </TouchableOpacity>
         )}
-     
+
+        <TouchableOpacity onPress={clearFields}>
+          <MaterialIcons name="clear" size={30} color="white" />
+        </TouchableOpacity>
+
       </View>
-      </ScrollView>
-      <BottomNav />
-     
     </View>
   );
 }
@@ -353,7 +372,7 @@ const styles = StyleSheet.create({
     marginRight: 10, // Add space between the icon and title
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: hp('2%'),
     color: '#fff',
     fontWeight: 'bold',
   },
@@ -445,5 +464,15 @@ const styles = StyleSheet.create({
   },
   confirmButton: {
     backgroundColor: 'green',
+  },
+  bottomNav: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: '#007BFF',
+    paddingVertical: hp('1%'),
+    position: 'absolute',
+    bottom: 0,
+    width: wp('100%'),
+    // Ensure it is above any potential content or padding from other screens
   },
 });

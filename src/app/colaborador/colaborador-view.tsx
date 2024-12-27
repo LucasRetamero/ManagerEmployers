@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, TextInput, TouchableOpacity, Modal, Text, Alert, StyleSheet, FlatList } from 'react-native';
+import { View, TextInput, TouchableOpacity, Modal, Text, Alert, StyleSheet, FlatList, ScrollView } from 'react-native';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import Header from '@/components/header';
 import { BottomNav } from '@/components/bottomNav';
@@ -7,11 +7,11 @@ import { router } from 'expo-router';
 import { useColaboradoratabase, ColaboradorDatabase } from '@/database/useColaboradorDatabase';
 
 export default function ColaboradorView() {
-  
+
   //Modal to show or hide
   const [removeModalVisible, setRemoveModalVisible] = useState(false);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
-  
+
   //Setting up input search
   const [search, setSearch] = useState("");
 
@@ -24,7 +24,7 @@ export default function ColaboradorView() {
 
   //Colaborador Table
   const [colaboradorTable, setColaboradorTable] = useState<ColaboradorDatabase[]>([]);
-  
+
   //Manager the database
   const colaboradorDatabase = useColaboradoratabase();
 
@@ -32,8 +32,8 @@ export default function ColaboradorView() {
   async function list() {
     try {
       const response = selectedOption === "Nome"
-       ? await colaboradorDatabase.searchByNome(search) 
-       :
+        ? await colaboradorDatabase.searchByNome(search)
+        :
         await colaboradorDatabase.searchByFuncao(search);
       setColaboradorTable(response);
     } catch (error) {
@@ -51,11 +51,11 @@ export default function ColaboradorView() {
       console.log(error)
     }
   }
-  
-  function confirmDeletion(id: number){
+
+  function confirmDeletion(id: number) {
     setRemoveModalVisible(true);
     setId(id);
- }
+  }
 
   //setting up Filter
   const toggleFilterModal = () => {
@@ -116,60 +116,61 @@ export default function ColaboradorView() {
             </View>
           </View>
         </Modal>
-
         <FlatList
           data={colaboradorTable}
           renderItem={({ item }) => (
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCell}>{item.nome}</Text>
-              <Text style={styles.tableCell}>{item.funcao}</Text>
-              <View style={styles.actions}>
-                <TouchableOpacity onPress={() => confirmDeletion(item.id)}>
-                  <MaterialIcons name="remove-circle-outline" size={24} color="red" />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => router.push({ pathname: "/colaborador/edition/[id]", params: { id: item.id } })}>
-                  <MaterialIcons name="edit" size={24} color="blue" />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => router.push({ pathname: "/colaborador/visualization/[id]", params: { id: item.id} })}>
-                  <MaterialIcons name="visibility" size={24} color="black" />
-                </TouchableOpacity>
+            <ScrollView>
+              <View style={styles.tableRow}>
+                <Text style={styles.tableCell}>{item.nome}</Text>
+                <Text style={styles.tableCell}>{item.funcao}</Text>
+                <View style={styles.actions}>
+                  <TouchableOpacity onPress={() => confirmDeletion(item.id)}>
+                    <MaterialIcons name="remove-circle-outline" size={24} color="red" />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => router.push({ pathname: "/colaborador/edition/[id]", params: { id: item.id } })}>
+                    <MaterialIcons name="edit" size={24} color="blue" />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => router.push({ pathname: "/colaborador/visualization/[id]", params: { id: item.id } })}>
+                    <MaterialIcons name="visibility" size={24} color="black" />
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
+            </ScrollView>
           )}
           keyExtractor={(item) => String(item.id)}
         />
       </View>
 
       {/* Custom Confirmation Modal */}
-              <Modal
-              visible={removeModalVisible}
-              transparent={true}
-              animationType="fade"
-              onRequestClose={ () => setRemoveModalVisible(false)}
-            >
-              <View style={styles.modalOverlay}>
-                <View style={styles.modalContent}>
-                  <Text style={styles.modalTitle}>Confirmação</Text>
-                  <Text style={styles.modalMessage}>Deseja realmente remover esse colaborador ? </Text>
-      
-                  <View style={styles.buttonContainer}>
-                    <TouchableOpacity
-                      onPress={ () => setRemoveModalVisible(false)}
-                      style={[styles.button, styles.cancelButton]}
-                    >
-                      <Text style={styles.buttonText}>Cancel</Text>
-                    </TouchableOpacity>
-      
-                    <TouchableOpacity
-                      onPress={remove}
-                      style={[styles.button, styles.confirmButton]}
-                    >
-                      <Text style={styles.buttonText}>Remover</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </View>
-            </Modal>
+      <Modal
+        visible={removeModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setRemoveModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Confirmação</Text>
+            <Text style={styles.modalMessage}>Deseja realmente remover esse colaborador ? </Text>
+
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                onPress={() => setRemoveModalVisible(false)}
+                style={[styles.button, styles.cancelButton]}
+              >
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={remove}
+                style={[styles.button, styles.confirmButton]}
+              >
+                <Text style={styles.buttonText}>Remover</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       <BottomNav />
     </View>
