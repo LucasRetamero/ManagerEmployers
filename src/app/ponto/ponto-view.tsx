@@ -7,7 +7,8 @@ import {
   Text,
   StyleSheet,
   FlatList,
-  Alert
+  Alert,
+  ScrollView
 } from 'react-native';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import Header from '@/components/header';
@@ -25,7 +26,7 @@ export default function PontoView() {
   const [modalVisible, setModalVisible] = useState(false);
   //States to modal and radiobutton
   const [filterModalVisible, setFilterModalVisible] = useState(false);
-  const options = ['Nome'];
+  const options = ['Nome', 'Data Entrada'];
   const [selectedOption, setSelectedOption] = useState(options[0]);
 
   //Setting up hour and time input and output
@@ -49,7 +50,9 @@ export default function PontoView() {
   //Input to query by Date
   const [data, setData] = useState({
     data_entrada: "",
-    data_saida: ""
+    hora_entrada: "",
+    data_saida: "",
+    hora_saida: ""
   });
 
   //Setting function to manager input
@@ -59,6 +62,13 @@ export default function PontoView() {
       data_entrada: text,
     }));
   };
+ 
+  const handleHoraEntradaChange = (text: string) => {
+    setData((prevData) => ({
+      ...prevData,
+      hora_entrada: text,
+    }));
+  };
 
   const handleDataSaidaChange = (text: string) => {
     setData((prevData) => ({
@@ -66,7 +76,13 @@ export default function PontoView() {
       data_saida: text,
     }));
   };
-
+  
+  const handleHoraSaidaChange = (text: string) => {
+    setData((prevData) => ({
+      ...prevData,
+      hora_saida: text,
+    }));
+  };
   //Get List from database
   async function list() {
     try {
@@ -80,9 +96,13 @@ export default function PontoView() {
   //Get List by Datefrom database
   async function listByDate() {;
     try {
-      const response = await pontoDatabase.searchByDate(data.data_entrada, data.data_saida)
+      const response = await pontoDatabase.searchByDate(data.data_entrada)
+      if(response.length > 0){
       setPontoTable([]);
       setPontoTable(response);
+      }else{
+        list();
+      }
     } catch (error) {
       console.error("Error to get a ponto by date:", error);
     }
@@ -117,7 +137,7 @@ export default function PontoView() {
 
   //Setting up hour and time functions
   const formatToBrazilianTime = (date: Date): string => {
-    return format(date, 'dd-MM-yyyy HH:mm:ss', { timeZone: BRAZILIAN_TIMEZONE });
+    return format(date, 'dd/MM/yyyy HH:mm:ss', { timeZone: BRAZILIAN_TIMEZONE });
   };
 
   // Input Date and Hour functions
@@ -126,7 +146,7 @@ export default function PontoView() {
       // Update only the date portion
       selectedDateTime.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
       setSelectedDateTime(new Date(selectedDateTime));
-      handleDataEntradaChange(format(new Date(selectedDateTime), 'dd-MM-yyyy HH:mm:ss', { timeZone: BRAZILIAN_TIMEZONE }));
+      handleDataEntradaChange(format(new Date(selectedDateTime), 'dd/MM/yyyy', { timeZone: BRAZILIAN_TIMEZONE }));
     }
     setShowDatePicker(false);
   };
@@ -136,7 +156,7 @@ export default function PontoView() {
       // Update only the time portion
       selectedDateTime.setHours(time.getHours(), time.getMinutes(), 0, 0);
       setSelectedDateTime(new Date(selectedDateTime));
-      handleDataEntradaChange(format(new Date(selectedDateTime), 'dd-MM-yyyy HH:mm:ss', { timeZone: BRAZILIAN_TIMEZONE }));
+      handleHoraEntradaChange(format(new Date(selectedDateTime), 'HH:mm', { timeZone: BRAZILIAN_TIMEZONE }));
     }
     setShowTimePicker(false);
   };
@@ -147,7 +167,7 @@ export default function PontoView() {
       // Update only the date portion
       selectedOutputDateTime.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
       setSelectedOutputDateTime(new Date(selectedOutputDateTime));
-      handleDataSaidaChange(format(new Date(selectedOutputDateTime), 'dd-MM-yyyy HH:mm:ss', { timeZone: BRAZILIAN_TIMEZONE }));
+      handleDataSaidaChange(format(new Date(selectedOutputDateTime), 'dd/MM/yyyy', { timeZone: BRAZILIAN_TIMEZONE }));
     }
     setShowOutputDatePicker(false);
   };
@@ -157,7 +177,7 @@ export default function PontoView() {
       // Update only the time portion
       selectedOutputDateTime.setHours(time.getHours(), time.getMinutes(), 0, 0);
       setSelectedOutputDateTime(new Date(selectedOutputDateTime));
-      handleDataSaidaChange(format(new Date(selectedOutputDateTime), 'dd-MM-yyyy HH:mm:ss', { timeZone: BRAZILIAN_TIMEZONE }));
+      handleHoraSaidaChange(format(new Date(selectedOutputDateTime), 'HH:mm', { timeZone: BRAZILIAN_TIMEZONE }));
     }
     setShowOutputTimePicker(false);
   };
@@ -187,9 +207,9 @@ export default function PontoView() {
           </View>
         )}
 
-        {selectedOption === 'Data & Hora' && (
+        {selectedOption === 'Data Entrada' && (
           <View>
-            <Text style={styles.titleForm}>Data e Hora da entrada:</Text>
+            <Text style={styles.titleForm}>Data de entrada:</Text>
             <View style={styles.dateTimeContainer}>
               {/* Date Picker */}
               <View style={styles.pickerContainer}>
@@ -213,75 +233,8 @@ export default function PontoView() {
                 )}
               </View>
 
-              {/* Time Picker */}
-              <View style={styles.pickerContainer}>
-                <TouchableOpacity
-                  onPress={() => setShowTimePicker(true)}
-                  style={styles.pickerButton}
-                >
-                  <Text style={styles.pickerText}>
-                    {format(selectedDateTime, 'HH:mm:ss', { timeZone: BRAZILIAN_TIMEZONE })}
-                  </Text>
-                </TouchableOpacity>
-
-                {/* Show Time Picker */}
-                {showTimePicker && (
-                  <DateTimePicker
-                    value={selectedDateTime}
-                    mode="time"
-                    display="default"
-                    onChange={handleTimeChange}
-                  />
-                )}
-              </View>
             </View>
-
-            <Text style={styles.titleForm}>Data e Hora da saida:</Text>
-            <View style={styles.dateTimeContainer}>
-              {/* Date Picker */}
-              <View style={styles.pickerContainer}>
-                <TouchableOpacity
-                  onPress={() => setShowOutputDatePicker(true)}
-                  style={styles.pickerButton}
-                >
-                  <Text style={styles.pickerText}>
-                    {selectedOutputDateTime.toLocaleDateString()}
-                  </Text>
-                </TouchableOpacity>
-
-                {/* Show Date Picker */}
-                {showOutputDatePicker && (
-                  <DateTimePicker
-                    value={selectedOutputDateTime}
-                    mode="date"
-                    display="default"
-                    onChange={handleOutputDateChange}
-                  />
-                )}
-              </View>
-
-              {/* Time Picker */}
-              <View style={styles.pickerContainer}>
-                <TouchableOpacity
-                  onPress={() => setShowOutputTimePicker(true)}
-                  style={styles.pickerButton}
-                >
-                  <Text style={styles.pickerText}>
-                    {format(selectedOutputDateTime, 'HH:mm:ss', { timeZone: BRAZILIAN_TIMEZONE })}
-                  </Text>
-                </TouchableOpacity>
-
-                {/* Show Time Picker */}
-                {showOutputTimePicker && (
-                  <DateTimePicker
-                    value={selectedOutputDateTime}
-                    mode="time"
-                    display="default"
-                    onChange={handleOutputTimeChange}
-                  />
-                )}
-              </View>
-            </View>
+            
             <View>
               {/* Blue Search Button */}
               <TouchableOpacity style={styles.searchButton} onPress={listByDate}>
@@ -325,10 +278,13 @@ export default function PontoView() {
         <FlatList
           data={pontoTable}
           renderItem={({ item }) => (
+          <ScrollView>
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>{item.nome}</Text>
               <Text style={styles.tableCell}>{item.data_entrada}</Text>
+              <Text style={styles.tableCell}>{item.hora_entrada}</Text>
               <Text style={styles.tableCell}>{item.data_saida}</Text>
+              <Text style={styles.tableCell}>{item.hora_saida}</Text>
               <View style={styles.actions}>
                 <TouchableOpacity onPress={() => confirmDeletion(item.id)}>
                   <MaterialIcons name="remove-circle-outline" size={24} color="red" />
@@ -338,6 +294,7 @@ export default function PontoView() {
                 </TouchableOpacity>
               </View>
             </View>
+            </ScrollView>
           )}
           keyExtractor={(item) => String(item.id)}
         />

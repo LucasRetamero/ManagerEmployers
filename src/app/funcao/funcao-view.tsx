@@ -7,7 +7,8 @@ import {
    Text, 
    Alert, 
    StyleSheet, 
-   FlatList
+   FlatList,
+   ScrollView
 } from 'react-native';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import Header from '@/components/header';
@@ -75,6 +76,7 @@ export default function FuncaoView() {
         <FlatList
           data={funcao}
           renderItem={({ item }) => (
+             <ScrollView>
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>{item.nome}</Text>
               <View style={styles.actions}>
@@ -86,6 +88,7 @@ export default function FuncaoView() {
                 </TouchableOpacity>
               </View>
             </View>
+            </ScrollView>
           )}
           keyExtractor={(item) => String(item.id)}
         />

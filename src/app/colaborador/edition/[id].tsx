@@ -223,6 +223,7 @@ export default function EmployerForm() {
       <ScrollView>
         {/* Content */}
         <View style={styles.content}>
+          <Text style={styles.title}>CRM Manager</Text>
           {/* Form Inputs */}
           <Text style={styles.titleForm}>Nome:</Text>
           <TextInput

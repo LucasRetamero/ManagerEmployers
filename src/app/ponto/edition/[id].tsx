@@ -41,7 +41,9 @@ export default function PontoForm() {
     nome: "",
     funcao: "",
     data_entrada: "",
-    data_saida: ""
+    hora_entrada: "",
+    data_saida: "",
+    hora_saida: ""
   };
 
   //Setting up text button
@@ -51,7 +53,9 @@ export default function PontoForm() {
     nome: "",
     funcao: "",
     data_entrada: "",
-    data_saida: ""
+    hora_entrada: "",
+    data_saida: "",
+    hora_saida: ""
   })
   //colaborador Table
   const [colaboradorTable, setColaboradorTable] = useState<ColaboradorDatabase[]>([]);
@@ -86,10 +90,24 @@ export default function PontoForm() {
     }));
   };
 
+  const handleHoraEntradaChange = (text: string) => {
+    setData((prevData) => ({
+      ...prevData,
+      hora_entrada: text,
+    }));
+  };
+
   const handleDataSaidaChange = (text: string) => {
     setData((prevData) => ({
       ...prevData,
       data_saida: text,
+    }));
+  };
+   
+  const handleHoraSaidaChange = (text: string) => {
+    setData((prevData) => ({
+      ...prevData,
+      hora_saida: text,
     }));
   };
 
@@ -103,7 +121,7 @@ export default function PontoForm() {
 
   //Setting up hour and time functions
   const formatToBrazilianTime = (date: Date): string => {
-    return format(date, 'dd-MM-yyyy HH:mm:ss', { timeZone: BRAZILIAN_TIMEZONE });
+    return format(date, 'dd/MM/yyyy HH:mm:ss', { timeZone: BRAZILIAN_TIMEZONE });
   };
 
   // Input Date and Hour functions
@@ -112,7 +130,7 @@ export default function PontoForm() {
       // Update only the date portion
       selectedDateTime.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
       setSelectedDateTime(new Date(selectedDateTime));
-      handleDataEntradaChange(format(new Date(selectedDateTime), 'dd-MM-yyyy HH:mm:ss', { timeZone: BRAZILIAN_TIMEZONE }));
+      handleDataEntradaChange(format(new Date(selectedDateTime), 'dd/MM/yyyy', { timeZone: BRAZILIAN_TIMEZONE }));
     }
     setShowDatePicker(false);
   };
@@ -122,7 +140,7 @@ export default function PontoForm() {
       // Update only the time portion
       selectedDateTime.setHours(time.getHours(), time.getMinutes(), 0, 0);
       setSelectedDateTime(new Date(selectedDateTime));
-      handleDataEntradaChange(format(new Date(selectedDateTime), 'dd-MM-yyyy HH:mm:ss', { timeZone: BRAZILIAN_TIMEZONE }));
+      handleHoraEntradaChange(format(new Date(selectedDateTime), 'HH:mm', { timeZone: BRAZILIAN_TIMEZONE }));
     }
     setShowTimePicker(false);
   };
@@ -133,7 +151,7 @@ export default function PontoForm() {
       // Update only the date portion
       selectedOutputDateTime.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
       setSelectedOutputDateTime(new Date(selectedOutputDateTime));
-      handleDataSaidaChange(format(new Date(selectedOutputDateTime), 'dd-MM-yyyy HH:mm:ss', { timeZone: BRAZILIAN_TIMEZONE }));
+      handleDataSaidaChange(format(new Date(selectedOutputDateTime), 'dd/MM/yyyy', { timeZone: BRAZILIAN_TIMEZONE }));
     }
     setShowOutputDatePicker(false);
   };
@@ -143,7 +161,7 @@ export default function PontoForm() {
       // Update only the time portion
       selectedOutputDateTime.setHours(time.getHours(), time.getMinutes(), 0, 0);
       setSelectedOutputDateTime(new Date(selectedOutputDateTime));
-      handleDataSaidaChange(format(new Date(selectedOutputDateTime), 'dd-MM-yyyy HH:mm:ss', { timeZone: BRAZILIAN_TIMEZONE }));
+      handleHoraSaidaChange(format(new Date(selectedOutputDateTime), 'HH:mm', { timeZone: BRAZILIAN_TIMEZONE }));
     }
     setShowOutputTimePicker(false);
   };
@@ -162,7 +180,9 @@ export default function PontoForm() {
         nome: data.nome,
         funcao: data.funcao,
         data_entrada: data.data_entrada,
-        data_saida: data.data_saida
+        hora_entrada: data.hora_entrada,
+        data_saida: data.data_saida,
+        hora_saida: data.hora_saida
       });
       setData(initialData);
       Alert.alert("Ponto adicionado com sucesso !");
@@ -179,7 +199,9 @@ export default function PontoForm() {
         nome: data.nome,
         funcao: data.funcao,
         data_entrada: data.data_entrada,
-        data_saida: data.data_saida
+        hora_entrada: data.hora_entrada,
+        data_saida: data.data_saida,
+        hora_saida: data.hora_saida
       });
       Alert.alert("Ponto atualizado com sucesso !");
       router.back();
@@ -211,7 +233,9 @@ export default function PontoForm() {
             nome: response.nome,
             funcao: response.funcao,
             data_entrada: response.data_entrada,
-            data_saida: response.data_saida
+            hora_entrada: response.hora_entrada,
+            data_saida: response.data_saida,
+            hora_saida: response.hora_saida
           })
         }
       })

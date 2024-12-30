@@ -130,9 +130,6 @@ export default function ColaboradorView() {
                   <TouchableOpacity onPress={() => router.push({ pathname: "/colaborador/edition/[id]", params: { id: item.id } })}>
                     <MaterialIcons name="edit" size={24} color="blue" />
                   </TouchableOpacity>
-                  <TouchableOpacity onPress={() => router.push({ pathname: "/colaborador/visualization/[id]", params: { id: item.id } })}>
-                    <MaterialIcons name="visibility" size={24} color="black" />
-                  </TouchableOpacity>
                 </View>
               </View>
             </ScrollView>

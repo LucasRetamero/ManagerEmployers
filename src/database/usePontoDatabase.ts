@@ -5,7 +5,9 @@ export type PontoDatabase = {
     nome: string,
     funcao: string,
     data_entrada: string,
+    hora_entrada: string,
     data_saida: string,
+    hora_saida: string
 }
 
 export function usePontoDatabase() {
@@ -14,7 +16,7 @@ export function usePontoDatabase() {
 
     async function create(data: Omit<PontoDatabase, "id">) {
         const statement = await database.prepareAsync(
-            "INSERT INTO ponto(nome, funcao, data_entrada, data_saida) VALUES ($nome, $funcao, $data_entrada, $data_saida)"
+            "INSERT INTO ponto(nome, funcao, data_entrada, hora_entrada, data_saida, hora_saida) VALUES ($nome, $funcao, $data_entrada, $hora_entrada, $data_saida, $hora_saida)"
         );
 
         try {
@@ -22,7 +24,9 @@ export function usePontoDatabase() {
                 $nome: data.nome,
                 $funcao: data.funcao,
                 $data_entrada: data.data_entrada,
+                $hora_entrada: data.hora_entrada,
                 $data_saida: data.data_saida,
+                $hora_saida: data.hora_saida,
             });
 
             const insertedRowid = result.lastInsertRowId.toLocaleString();
@@ -48,14 +52,12 @@ export function usePontoDatabase() {
         }
     }
     
-    async function searchByDate(data_entrada: string, data_saida: string) {
+    async function searchByDate(data_entrada: string) {
         try {
-            const query = "SELECT * FROM ponto WHERE STR_TO_DATE(data_entrada, '%d/%m/%Y %H:%i') BETWEEN ? AND STR_TO_DATE(data_saida, '%d/%m/%Y %H:%i') BETWEEN ?";
-
+            const query = "SELECT * FROM ponto WHERE data_entrada LIKE ?";
             const response = await database.getAllAsync<PontoDatabase>(
                 query,
-                `${data_entrada}`,
-                `${data_saida}`);
+                `${data_entrada}`);
             return response;
         } catch (error) {
             throw error;
@@ -67,7 +69,7 @@ export function usePontoDatabase() {
             const query = "SELECT * FROM ponto";
 
             const response = await database.getAllAsync<PontoDatabase>(query);
-
+            console.log("my resp list:", response);
             return response;
         } catch (error) {
             throw error;
@@ -76,7 +78,7 @@ export function usePontoDatabase() {
 
     async function update(data: PontoDatabase) {
         const statement = await database.prepareAsync(
-            "UPDATE ponto SET nome = $nome, funcao = $funcao, data_entrada = $data_entrada, data_saida = $data_saida  WHERE id = $id"
+            "UPDATE ponto SET nome = $nome, funcao = $funcao, data_entrada = $data_entrada, hora_entrada = $hora_entrada, data_saida = $data_saida, hora_saida = $hora_saida  WHERE id = $id"
         )
 
         try {
@@ -85,7 +87,9 @@ export function usePontoDatabase() {
                 $nome: data.nome,
                 $funcao: data.funcao,
                 $data_entrada: data.data_entrada,
+                $hora_entrada: data.hora_entrada,
                 $data_saida: data.data_saida,
+                $hora_saida: data.hora_saida,
             })
         } catch (error) {
             throw error
